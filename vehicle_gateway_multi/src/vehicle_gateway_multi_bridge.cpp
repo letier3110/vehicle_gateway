@@ -136,14 +136,14 @@ int main(int argc, char ** argv)
     return EXIT_FAILURE;
   }
   const char * zenoh_config_file = argv[1];
-  z_owned_config_t config = zc_config_from_file(zenoh_config_file);
-  if (!z_check(config)) {
+  z_owned_config_t config = {0};
+  if (zc_config_from_file(&config, zenoh_config_file) < 0) {
     std::cout << "unable to parse zenoh config from [" << zenoh_config_file << "]\n";
     return EXIT_FAILURE;
   }
   std::cout << "opening zenoh session...\n";
-  z_owned_session_t session = z_open(z_move(config));
-  if (!z_check(session)) {
+  z_owned_session_t session = {0};
+  if (z_open(&session, z_move(config), NULL) < 0) {
     std::cout << "unable to open zenoh session\n";
     return EXIT_FAILURE;
   }
@@ -180,7 +180,7 @@ int main(int argc, char ** argv)
   rclcpp::shutdown();
 
   std::cout << "closing zenoh session...\n";
-  z_close(z_move(session));
+  z_close(z_loan(session), NULL);
 
   return EXIT_SUCCESS;
 }
