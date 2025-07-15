@@ -29,7 +29,7 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
 
 RUN pip3 install vcstool pyros-genmsg
 
-RUN mkdir -p /home/vehicle_gateway/src && cd /home/vehicle_gateway && git clone https://github.com/osrf/vehicle_gateway src/vehicle_gateway --depth 1 && \
+RUN mkdir -p /home/vehicle_gateway/src && cd /home/vehicle_gateway && git clone https://github.com/letier3110/vehicle_gateway src/vehicle_gateway --depth 1 && \
     vcs import src < src/vehicle_gateway/dependencies.repos
 
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg && \

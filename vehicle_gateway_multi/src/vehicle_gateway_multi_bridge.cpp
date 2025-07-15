@@ -104,12 +104,13 @@ public:
     this->newdata_ = false;
 
     string s = j.dump();
-    z_publisher_put_options_t options = z_publisher_put_options_default();
+    z_publisher_put_options_t options;
+    z_publisher_put_options_default(&options);
     options.encoding = z_encoding(Z_ENCODING_PREFIX_TEXT_JSON, NULL);
+    z_moved_bytes_t payload = z_bytes_new((const uint8_t *)s.c_str(), s.size());
     z_publisher_put(
       z_loan(this->pub_),
-      reinterpret_cast<const uint8_t *>(s.c_str()),
-      s.size() + 1,
+      &payload,
       &options);
   }
 
@@ -180,7 +181,7 @@ int main(int argc, char ** argv)
   rclcpp::shutdown();
 
   std::cout << "closing zenoh session...\n";
-  z_close(z_loan(session), NULL);
+  z_close((z_loaned_session_t *)&session, NULL);
 
   return EXIT_SUCCESS;
 }

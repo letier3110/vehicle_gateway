@@ -21,10 +21,10 @@ const char * kind_to_str(z_sample_kind_t kind);
 void data_handler(z_loaned_sample_t *sample, void * /*arg*/)
 {
   z_owned_string_t keystr = {0};
-  z_keyexpr_to_string(&keystr, sample->keyexpr);
+  z_keyexpr_to_string(&keystr, sample->key);
   printf(
     ">> [Subscriber] Received %s ('%s': '%.*s')\n", kind_to_str(sample->kind), z_loan(keystr),
-    (int)sample->payload.len, sample->payload.start);
+    (int)sample->value.len, sample->value.start);
   z_drop(z_move(keystr));
 }
 
@@ -41,7 +41,7 @@ int main(int argc, char ** argv)
     exit(-1);
   }
   if (argc > 2) {
-    if (zc_config_insert_json5(z_loan(config), Z_CONFIG_LISTEN_KEY, argv[2]) < 0) {
+  if (zc_config_insert_json5((z_loaned_config_t *)&config, Z_CONFIG_LISTEN_KEY, argv[2]) < 0) {
       printf(
         "Couldn't insert value `%s` in configuration at `%s`. "
         "This is likely because `%s` expects a "
@@ -54,7 +54,7 @@ int main(int argc, char ** argv)
 
   printf("Opening session...\n");
   z_owned_session_t s = {0};
-  if (z_open(&s, z_move(config), NULL) < 0 || !z_check(s)) {
+  if (z_open(&s, z_move(config), NULL) < 0) {
     printf("Unable to open session!\n");
     exit(-1);
   }
@@ -79,7 +79,7 @@ int main(int argc, char ** argv)
   }
 
   z_undeclare_subscriber(z_move(sub));
-  z_close(z_loan(s), NULL);
+  z_close((z_loaned_session_t *)&s, NULL);
   return 0;
 }
 
