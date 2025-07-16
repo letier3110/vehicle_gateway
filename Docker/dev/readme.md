@@ -23,7 +23,7 @@ docker run --gpus all   --network host   --privileged   --runtime=nvidia   -v /h
 ```
 
 ```sh
-colcon build
+colcon build --packages-select betaflight_sim betaflight_configurator betaflight_controller betaflight_demo betaflight_gazebo gz_aerial_plugins vehicle_gateway vehicle_gateway_betaflight vehicle_gateway_worlds msp roz_gz_interfaces ros_gz_sim ros_gz_bridge vehicle_gateway_models
 ```
 
 if build pass with no errors
